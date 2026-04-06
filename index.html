@@ -9,111 +9,136 @@
 body {
     font-family: Arial, sans-serif;
     background: #0f172a;
-    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
+
+/* Tombol About */
+.about-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Container utama */
 .container {
-    background: #1e293b;
+    background: #f1f5f9;
     padding: 30px;
     border-radius: 15px;
     width: 420px;
     text-align: center;
 }
+
+/* Input */
 input {
     width: 100%;
     padding: 10px;
-    margin: 10px 0;
+    margin: 15px 0;
     border-radius: 8px;
-    border: none;
+    border: 2px solid #0ea5e9;
 }
+
+/* Button */
 button {
-    padding: 10px;
-    margin: 5px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
+    background: #0ea5e9;
+    color: white;
     cursor: pointer;
-    background: #22c55e;
-    font-weight: bold;
 }
+
+/* Result */
 .result {
-    margin-top: 15px;
-    background: #020617;
-    padding: 15px;
-    border-radius: 8px;
-    text-align: left;
+    margin-top: 20px;
+    font-weight: bold;
+    color: #064e3b;
 }
-.valid { color: #22c55e; }
-.invalid { color: #ef4444; }
+
+/* Popup */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #e5e7eb;
+    padding: 25px;
+    border-radius: 15px;
+    width: 300px;
+    text-align: center; /* ⬅️ INI YANG BUAT RATA TENGAH */
+}
+
+.close-btn {
+    margin-top: 15px;
+}
 </style>
 
 </head>
 <body>
 
+<!-- Tombol About -->
+<button class="about-btn" onclick="openAbout()">About</button>
+
+<!-- Container -->
 <div class="container">
     <h2>Scientific Number Checker</h2>
 
     <input type="text" id="inputNumber" placeholder="Contoh: 3e3 atau 3×10^3">
 
-    <button onclick="checkScientific()">Cek & Konversi</button>
+    <button onclick="checkScientific()">Check</button>
 
-    <div class="result" id="result">Hasil akan muncul di sini</div>
+    <div class="result" id="result"></div>
+</div>
+
+<!-- Popup About -->
+<div class="modal" id="aboutModal">
+    <div class="modal-content">
+        <h3>About</h3>
+        <p><b>Nama:</b> Marcelino Winowoda</p>
+        <p><b>NIM:</b> 221011060047</p>
+
+        <button class="close-btn" onclick="closeAbout()">Tutup</button>
+    </div>
 </div>
 
 <script>
-function toSuperscript(num) {
-    const map = {
-        "0":"⁰","1":"¹","2":"²","3":"³","4":"⁴",
-        "5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹","-":"⁻"
-    };
-    return num.toString().split("").map(x => map[x] || x).join("");
+function openAbout() {
+    document.getElementById("aboutModal").style.display = "flex";
+}
+
+function closeAbout() {
+    document.getElementById("aboutModal").style.display = "none";
 }
 
 function checkScientific() {
     let input = document.getElementById("inputNumber").value.trim();
 
-    if (input === "") {
-        alert("Masukkan angka!");
-        return;
-    }
-
-    let resultBox = document.getElementById("result");
-
     let patternE = /^[+-]?\d+(\.\d+)?e[+-]?\d+$/i;
     let patternX = /^[+-]?\d+(\.\d+)?\s*[x×]\s*10\^[+-]?\d+$/i;
 
-    let value, base, exponent;
+    let resultBox = document.getElementById("result");
 
-    if (patternE.test(input)) {
-        value = Number(input);
-
-        let parts = input.toLowerCase().split("e");
-        base = parseFloat(parts[0]);
-        exponent = parseInt(parts[1]);
-
-    } else if (patternX.test(input)) {
-        let parts = input.split(/[x×]/);
-        base = parseFloat(parts[0]);
-        exponent = parseInt(parts[1].replace("10^", ""));
-
-        value = base * Math.pow(10, exponent);
-
+    if (patternE.test(input) || patternX.test(input)) {
+        resultBox.innerHTML = "✔ Yes, it is a scientific number";
     } else {
-        resultBox.innerHTML = "<span class='invalid'>✖ Bukan Scientific Notation</span>";
-        return;
+        resultBox.innerHTML = "✖ No, it is not a scientific number";
     }
-
-    let scientificDisplay = base + " × 10" + toSuperscript(exponent);
-    let eFormat = base + "e" + exponent;
-
-    resultBox.innerHTML = `
-        <span class='valid'>✔ VALID Scientific Notation</span><br><br>
-        🔢 Nilai Desimal: <b>${value}</b><br>
-        📘 Format e: <b>${eFormat}</b><br>
-        📗 Format ilmiah: <b>${scientificDisplay}</b>
-    `;
 }
 </script>
 
